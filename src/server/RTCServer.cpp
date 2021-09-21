@@ -8,11 +8,16 @@
 #include <string>
 #include <pthread.h> 
 
+#include "Room.h"
+
 using namespace std;
 
-//TODO: record all available sockets and communicate to them 
-void* handleConnection(void* p_clientSocket) {
-    int clientSocket = *(int *)p_clientSocket;
+//TODO: figure out ptr situation
+void* handleConnection(void* p_room) {
+    Room* room = (Room *)p_room;
+    int clientSocket = room->getNewest();
+    std::cout << "size" << room->size() << "\n";
+    std::cout << clientSocket << "\n";
     char host[NI_MAXHOST];      // Client's remote name
     char service[NI_MAXSERV];   // port the client is connect on  
     memset(host, 0, NI_MAXHOST); 
@@ -25,6 +30,7 @@ void* handleConnection(void* p_clientSocket) {
     while (true) {
         memset(buf, 0, 4096);
         int bytesReceived = recv(clientSocket, buf, 4096, 0);
+        std::cout << "from client at " << clientSocket << "\n";
         if (bytesReceived == -1) {
             cerr << "Error in recv(). Quitting" << endl;
             break;
@@ -34,13 +40,18 @@ void* handleConnection(void* p_clientSocket) {
             break;
         }
         cout << string(buf, 0, bytesReceived) << endl;
-        // Echo message back to client
-        send(clientSocket, buf, bytesReceived + 1, 0);
+        // Echo message back to all clients
+        
+        std::vector<int> members = room->members();
+        for (int i = 0; i < room->size(); i++) {
+            std::cout << "to " << i << " at " << members[i] << " " << buf << "\n";
+            send(members[i], buf, bytesReceived + 1, 0);
+        }
+       
     }
     close(clientSocket);
 }
 
-//TODO: handle failures
 int main(int argc, char *argv[]) {
     //Create a socket
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -59,12 +70,18 @@ int main(int argc, char *argv[]) {
     
     // Wait for a connection
     // Create new thread and handle
+    Room room;
     while(1) {
         sockaddr_in client;
         socklen_t clientSize = sizeof(client);
         int clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
+
+        //dbg
+        std::cout << "server accepted" << clientSocket << "\n";
+
+        room.addMember(clientSocket);
         pthread_t thread;
-        pthread_create(&thread, NULL, handleConnection, &clientSocket);
+        pthread_create(&thread, NULL, handleConnection, &room);
     }
     return 0;
 }

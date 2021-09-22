@@ -21,19 +21,16 @@ void* toServer(void* info) {
         getline(cin, userInput);
         //Send to server
         string msg = username + " :: " + userInput; 
-        /*
         int sendRes = send(sock, msg.c_str(), msg.size() + 1, 0);
         if (sendRes == -1) {
             cout << "Could not send to server!\n";
             continue;
         }
-        */
     }
     return NULL;
 }
 
 void* fromServer(void* info) {    
-    /*
     int sock = *(int *)info;
     char buf[4096];
     while(1) {
@@ -47,8 +44,7 @@ void* fromServer(void* info) {
         else {
             cout << string(buf, bytesReceived) << "\n";
         }
-    }
-    */    
+    }  
     return NULL;
 }
 
@@ -75,51 +71,22 @@ int main(int argc, char *argv[]) {
 
     //Connect to the server on the socket
     int connectRes = connect(sock, (sockaddr*)&hint, sizeof(hint));
+    std::cout << "connected" << "\n";
     if (connectRes == -1) {
         return 1;
     }
-
-    //dbg
-    std::cout << "connected to server " << sock << "\n";
-
-
-    char buf[4096];
-    string userInput;
-    while (1) {
-        cout << "> ";
-        getline(cin, userInput);
-
-        //Send to server
-        int sendRes = send(sock, userInput.c_str(), userInput.size() + 1, 0);
-        if (sendRes == -1) {
-            cout << "Could not send to server! Whoops!\r\n";
-            continue;
-        }
-
-        //Wait for response
-        memset(buf, 0, 4096);
-        int bytesReceived = recv(sock, buf, 4096, 0);
-        if (bytesReceived == -1) {
-            cout << "There was an error getting response from server\r\n";
-        }
-        //Display response
-        else {
-            cout << "SERVER> " << string(buf, bytesReceived) << "\r\n";
-        }
-    }
-
-
-
-    /*
+    
     pair<string, int> pairPtr = {username, sock};
     pthread_t toServerThread;
     pthread_create(&toServerThread, NULL, toServer, &pairPtr);
+    
 
+    
     pthread_t fromServerThread;
     pthread_create(&fromServerThread, NULL, fromServer, &sock);
-    */
+    
 
-    //while (1) {}
+    while (1) {}
 
     //Close the socket
     close(sock);

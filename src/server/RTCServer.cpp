@@ -16,14 +16,10 @@ using namespace std;
 void* handleConnection(void* p_room) {
     Room* room = (Room *)p_room;
     int clientSocket = room->getNewest();
-    std::cout << "size" << room->size() << "\n";
-    std::cout << clientSocket << "\n";
     char host[NI_MAXHOST];      // Client's remote name
     char service[NI_MAXSERV];   // port the client is connect on  
     memset(host, 0, NI_MAXHOST); 
     memset(service, 0, NI_MAXSERV);
-
-    cout << "connected on " << clientSocket << endl;
        
     // accept and echo message back to client
     char buf[4096];
@@ -40,15 +36,14 @@ void* handleConnection(void* p_room) {
             break;
         }
         cout << string(buf, 0, bytesReceived) << endl;
+
         // Echo message back to all clients
-        
         std::vector<int> members = room->members();
         for (int i = 0; i < room->size(); i++) {
-            std::cout << "to " << i << " at " << members[i] << " " << buf << "\n";
             send(members[i], buf, bytesReceived + 1, 0);
-        }
-       
+        }  
     }
+    //?
     close(clientSocket);
 }
 
@@ -75,10 +70,7 @@ int main(int argc, char *argv[]) {
         sockaddr_in client;
         socklen_t clientSize = sizeof(client);
         int clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
-
-        //dbg
-        std::cout << "server accepted" << clientSocket << "\n";
-
+        std::cout << clientSocket << "\n";
         room.addMember(clientSocket);
         pthread_t thread;
         pthread_create(&thread, NULL, handleConnection, &room);

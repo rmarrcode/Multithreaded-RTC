@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     sockaddr_in sockInfo;
     sockInfo.sin_family = AF_INET;
     sockInfo.sin_port = htons(54000);
-    inet_pton(AF_INET, "127.0.0.1", &sockInfo.sin_addr);
+    inet_pton(AF_INET, "0.0.0.0", &sockInfo.sin_addr);
     bind(serverSocket, (sockaddr*)&sockInfo, sizeof(sockInfo));
     listen(serverSocket, SOMAXCONN);
     

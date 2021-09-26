@@ -17,7 +17,6 @@ void* toServer(void* info) {
     char buf[4096];
     string userInput;
     while(1) {
-        cout << "> ";
         getline(cin, userInput);
         //Send to server
         string msg = username + " :: " + userInput; 
@@ -35,7 +34,6 @@ void* fromServer(void* info) {
     char buf[4096];
     while(1) {
         memset(buf, 0, 4096);
-        std::cout << "about to recv" << "\n";
         int bytesReceived = recv(sock, buf, 4096, 0);
         if (bytesReceived == -1) {
             cout << "There was an error getting a response from server\n";
@@ -71,7 +69,6 @@ int main(int argc, char *argv[]) {
 
     //Connect to the server on the socket
     int connectRes = connect(sock, (sockaddr*)&hint, sizeof(hint));
-    std::cout << "connected" << "\n";
     if (connectRes == -1) {
         return 1;
     }

@@ -26,7 +26,6 @@ void* handleConnection(void* p_room) {
     while (true) {
         memset(buf, 0, 4096);
         int bytesReceived = recv(clientSocket, buf, 4096, 0);
-        std::cout << "from client at " << clientSocket << "\n";
         if (bytesReceived == -1) {
             cerr << "Error in recv(). Quitting" << endl;
             break;
@@ -40,7 +39,9 @@ void* handleConnection(void* p_room) {
         // Echo message back to all clients
         std::vector<int> members = room->members();
         for (int i = 0; i < room->size(); i++) {
-            send(members[i], buf, bytesReceived + 1, 0);
+            if (clientSocket != members[i]) {
+                send(members[i], buf, bytesReceived + 1, 0);
+            }
         }  
     }
     //?
@@ -70,7 +71,6 @@ int main(int argc, char *argv[]) {
         sockaddr_in client;
         socklen_t clientSize = sizeof(client);
         int clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
-        std::cout << clientSocket << "\n";
         room.addMember(clientSocket);
         pthread_t thread;
         pthread_create(&thread, NULL, handleConnection, &room);

@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 
     //Create a hint structure for the server we're connecting with
     int port = 54000;
-    string ipAddress = "0.0.0.0";
+    string ipAddress = "159.89.81.106";
 
     sockaddr_in hint;
     hint.sin_family = AF_INET;

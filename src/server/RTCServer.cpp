@@ -19,8 +19,7 @@ void* handleConnection(void* p_room) {
     char host[NI_MAXHOST];      // Client's remote name
     char service[NI_MAXSERV];   // port the client is connect on  
     memset(host, 0, NI_MAXHOST); 
-    memset(service, 0, NI_MAXSERV);
-       
+    memset(service, 0, NI_MAXSERV);     
     // accept and echo message back to client
     char buf[4096];
     while (true) {
@@ -35,7 +34,6 @@ void* handleConnection(void* p_room) {
             break;
         }
         cout << string(buf, 0, bytesReceived) << endl;
-
         // Echo message back to all clients
         std::vector<int> members = room->members();
         for (int i = 0; i < room->size(); i++) {
@@ -44,7 +42,6 @@ void* handleConnection(void* p_room) {
             }
         }  
     }
-    //?
     close(clientSocket);
 }
 
@@ -55,7 +52,6 @@ int main(int argc, char *argv[]) {
         cerr << "Can't create a socket! Quitting" << endl;
         return -1;
     }
-
     // Bind the ip address and port to a socket
     sockaddr_in sockInfo;
     sockInfo.sin_family = AF_INET;
@@ -63,7 +59,6 @@ int main(int argc, char *argv[]) {
     inet_pton(AF_INET, "159.89.81.106", &sockInfo.sin_addr);
     bind(serverSocket, (sockaddr*)&sockInfo, sizeof(sockInfo));
     listen(serverSocket, SOMAXCONN);
-    
     // Wait for a connection
     // Create new thread and handle
     Room room;

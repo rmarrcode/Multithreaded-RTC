@@ -57,7 +57,6 @@ int main(int argc, char *argv[]) {
     if (sock == -1) {
         return 1;
     }
-
     //Create a hint structure for the server we're connecting with
     int port = 54000;
     string ipAddress = "159.89.81.106";
@@ -72,17 +71,14 @@ int main(int argc, char *argv[]) {
     if (connectRes == -1) {
         return 1;
     }
-    
+
     pair<string, int> pairPtr = {username, sock};
     pthread_t toServerThread;
     pthread_create(&toServerThread, NULL, toServer, &pairPtr);
     
-
-    
     pthread_t fromServerThread;
     pthread_create(&fromServerThread, NULL, fromServer, &sock);
     
-
     while (1) {}
 
     //Close the socket
